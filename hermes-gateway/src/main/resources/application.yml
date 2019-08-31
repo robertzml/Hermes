@@ -1,5 +1,5 @@
 server:
-  port: 8600
+  port: 8700
 
 spring:
   application:
@@ -13,8 +13,3 @@ spring:
         register-health-check: true
         prefer-ip-address: true
         health-check-interval: 10s
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
