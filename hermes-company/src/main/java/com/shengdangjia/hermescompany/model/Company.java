@@ -7,6 +7,10 @@ public class Company {
 
     private String port;
 
+    private String ip;
+
+    private String hostname;
+
     public Company() {
 
     }
@@ -38,5 +42,21 @@ public class Company {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 }

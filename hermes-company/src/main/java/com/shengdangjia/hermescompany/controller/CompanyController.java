@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.InetAddress;
+
 @RestController
+@RequestMapping("/company")
 public class CompanyController {
 
     @Value("${server.port}")
@@ -14,9 +17,21 @@ public class CompanyController {
 
     @RequestMapping("/find")
     public Company FindByName(@RequestParam(value = "name", defaultValue = "jack") String name) {
-        Company c = new Company(1, name);
-        c.setPort(port);
+        try {
+            Company c = new Company(1, name);
+            c.setPort(port);
 
-        return c;
+            InetAddress ia = InetAddress.getLocalHost();
+            c.setIp(ia.getHostAddress());
+            c.setHostname(ia.getHostName());
+
+            return c;
+        }
+        catch (Exception e) {
+            Company c = new Company(1, name);
+            c.setPort(port);
+
+            return c;
+        }
     }
 }

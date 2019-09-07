@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  web:
+    image: 2742479393/hermes-company:0.0.4
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 400M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "22300:23581"
+    networks:
+      - webnet
+networks:
+  webnet:
