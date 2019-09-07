@@ -1,7 +1,7 @@
 version: "3.7"
 services:
-  web:
-    image: 2742479393/hermes-company:0.0.4
+  company:
+    image: 2742479393/hermes-company:0.0.5
     deploy:
       replicas: 3
       resources:
@@ -13,6 +13,8 @@ services:
     ports:
       - "22300:23581"
     networks:
-      - webnet
+      - hermesnet
 networks:
-  webnet:
+  hermesnet:
+    external: true
+    name: hermes-overlay

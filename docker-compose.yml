@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  consul:
+    image: consul:1.6.0
+    container_name: hermes-consul
+    tty: true
+    stdin_open: true
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+      - type: bind
+        source: /home/zml/consul/config
+        target: /consul/config
+    deploy:
+      replicas: 1
+    command: agent
+    ports:
+      - "8500"
+      - "8600"
+      - "8600/udp"
+      - "8300-8302"
+      - "8301-8302/udp"
+      - "21000-21255"
+    networks:
+      - consulnet
+
+networks:
+  consulnet:
+    external: true
+    name: hermes-overlay

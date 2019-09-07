@@ -18,17 +18,17 @@ public class CompanyController {
     @RequestMapping("/find")
     public Company FindByName(@RequestParam(value = "name", defaultValue = "jack") String name) {
         try {
-            Company c = new Company(1, name);
+            var c = new Company(1, name);
             c.setPort(port);
 
-            InetAddress ia = InetAddress.getLocalHost();
+            var ia = InetAddress.getLocalHost();
             c.setIp(ia.getHostAddress());
             c.setHostname(ia.getHostName());
 
             return c;
         }
         catch (Exception e) {
-            Company c = new Company(1, name);
+            var c = new Company(1, name);
             c.setPort(port);
 
             return c;

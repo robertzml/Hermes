@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.shengdangjia'
-version = '0.0.1'
+version = '0.0.5'
 sourceCompatibility = '11'
 
 repositories {
