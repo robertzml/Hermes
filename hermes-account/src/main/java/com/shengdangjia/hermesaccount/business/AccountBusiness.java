@@ -18,9 +18,18 @@ public class AccountBusiness {
         return accountRepository.findAll();
     }
 
-    public boolean register(String token) {
+    /**
+     * 用户注册
+     * @param telephone 电话号码
+     * @return
+     */
+    public String register(String telephone) {
+        var token = java.util.UUID.randomUUID().toString();
 
-        stringRedisTemplate.opsForValue().set(token, "223344");
-        return true;
+        // 发送验证码
+        String verifyCode = "223344";
+
+        stringRedisTemplate.opsForValue().set("vc_" + token, verifyCode);
+        return token;
     }
 }
