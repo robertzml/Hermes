@@ -1,4 +1,4 @@
-package com.shengdangjia.hermesaccount.entity;
+package com.shengdangjia.common.model;
 
 public class ResponseData {
     /**
