@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 账户业务类
@@ -42,6 +45,31 @@ public class AccountBusiness {
 
         stringRedisTemplate.opsForValue().set("vc_" + token, verifyCode, Duration.ofSeconds(180));
         return token;
+    }
+
+    /**
+     * 添加用户
+     * @param telephone 手机
+     * @param imei IMEI
+     * @param token 验证令牌
+     * @param verifyCode 验证码
+     * @return
+     */
+    public boolean create(String telephone, String imei, String token, String verifyCode) {
+        // 比较验证码
+//        var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
+//        if (vc == null || !vc.equals(verifyCode))
+//            return false;
+
+        Account account = new Account();
+        account.setId(UUID.randomUUID().toString());
+        account.setTelephone(telephone);
+        account.setImei(imei);
+        account.setRegisterTime(new Timestamp(System.currentTimeMillis()));
+        account.setStatus(0);
+
+        var t = accountRepository.save(account);
+        return true;
     }
 
     /**

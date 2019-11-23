@@ -21,7 +21,6 @@ public class AccountController {
 
     /**
      * 用户注册
-     *
      * @param telephone 电话号码
      * @return token
      */
@@ -41,5 +40,16 @@ public class AccountController {
         catch (Exception e) {
             return RestHelper.makeResponse(null, 1);
         }
+    }
+
+    @RequestMapping("/account/registerConfirm")
+    ResponseData registerConfirm(@RequestParam(value = "telephone") String telephone, @RequestParam(value = "imei") String imei,
+                                 @RequestParam(value = "token") String token, @RequestParam(value = "verifyCode") String verifyCode) {
+        var result = accountBusiness.create(telephone, imei, token, verifyCode);
+
+        if (result)
+            return RestHelper.makeResponse(null, 0);
+        else
+            return RestHelper.makeResponse(null, 1);
     }
 }
