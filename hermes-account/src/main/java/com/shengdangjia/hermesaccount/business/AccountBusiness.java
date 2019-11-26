@@ -29,7 +29,16 @@ public class AccountBusiness {
     }
 
     /**
-     * 用户注册
+     * 按手机号查询用户
+     * @param telephone 手机号
+     * @return
+     */
+    public Account findByTelephone(String telephone) {
+        return accountRepository.findByTelephone(telephone);
+    }
+
+    /**
+     * 用户注册申请
      * @param telephone 电话号码
      * @return
      */
@@ -43,7 +52,7 @@ public class AccountBusiness {
             throw new Exception("发送失败");
         }
 
-        stringRedisTemplate.opsForValue().set("vc_" + token, verifyCode, Duration.ofSeconds(180));
+        stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
         return token;
     }
 
@@ -57,9 +66,9 @@ public class AccountBusiness {
      */
     public boolean create(String telephone, String imei, String token, String verifyCode) {
         // 比较验证码
-//        var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
-//        if (vc == null || !vc.equals(verifyCode))
-//            return false;
+        var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
+        if (vc == null || !vc.equals(telephone + verifyCode))
+            return false;
 
         Account account = new Account();
         account.setId(UUID.randomUUID().toString());

@@ -36,7 +36,7 @@ public class SMSHelper {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             var resbody = response.body();
-            System.out.println(resbody);
+            // System.out.println(resbody);
 
             Pattern p = Pattern.compile("<code>(\\d+)</code>");
             var matcher = p.matcher(resbody);

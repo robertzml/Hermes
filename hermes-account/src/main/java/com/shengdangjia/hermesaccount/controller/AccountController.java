@@ -2,12 +2,10 @@ package com.shengdangjia.hermesaccount.controller;
 
 import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
-import com.shengdangjia.hermesaccount.entity.Account;
+import com.shengdangjia.hermesaccount.entity.*;
 import com.shengdangjia.common.model.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AccountController {
@@ -19,14 +17,25 @@ public class AccountController {
         return accountBusiness.findAll();
     }
 
+    @RequestMapping("/account/find")
+    Account find(@RequestParam(value = "telephone") String telephone) {
+        return accountBusiness.findByTelephone(telephone);
+    }
+
     /**
-     * 用户注册
+     * 用户注册接口
      * @param telephone 电话号码
      * @return token
      */
     @RequestMapping("/account/register")
     ResponseData register(@RequestParam(value = "telephone") String telephone) {
         try {
+            // 检查手机号是否存在
+            var account = accountBusiness.findByTelephone(telephone);
+            if (account != null) {
+                return RestHelper.makeResponse(null, 1);
+            }
+
             var token = accountBusiness.register(telephone);
 
             class Result {
@@ -42,10 +51,14 @@ public class AccountController {
         }
     }
 
-    @RequestMapping("/account/registerConfirm")
-    ResponseData registerConfirm(@RequestParam(value = "telephone") String telephone, @RequestParam(value = "imei") String imei,
-                                 @RequestParam(value = "token") String token, @RequestParam(value = "verifyCode") String verifyCode) {
-        var result = accountBusiness.create(telephone, imei, token, verifyCode);
+    /**
+     * 注册确认接口
+     * @param model 确认参数
+     * @return
+     */
+    @RequestMapping(value = "/account/registerConfirm", method = RequestMethod.POST)
+    ResponseData registerConfirm(@RequestBody RegisterConfirmModel model) {
+        var result = accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
 
         if (result)
             return RestHelper.makeResponse(null, 0);
