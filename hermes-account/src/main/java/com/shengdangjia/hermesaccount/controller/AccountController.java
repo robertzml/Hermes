@@ -1,5 +1,6 @@
 package com.shengdangjia.hermesaccount.controller;
 
+import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
@@ -40,10 +41,10 @@ public class AccountController {
             var r = new Result();
             r.token = token;
 
-            return RestHelper.makeResponse(r, 0);
+            return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
         }
         catch (HermesException e) {
-            return RestHelper.makeResponse(null, e.getCode());
+            return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
         }
     }
 
@@ -54,11 +55,12 @@ public class AccountController {
      */
     @RequestMapping(value = "/account/registerConfirm", method = RequestMethod.POST)
     ResponseData registerConfirm(@RequestBody RegisterConfirmModel model) {
-        var result = accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
-
-        if (result)
-            return RestHelper.makeResponse(null, 0);
-        else
-            return RestHelper.makeResponse(null, 1);
+        try {
+            accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
+            return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
+        }
+        catch (HermesException e) {
+            return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
+        }
     }
 }

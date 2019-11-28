@@ -1,5 +1,6 @@
 package com.shengdangjia.hermesaccount.business;
 
+import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.utility.SMSHelper;
 import com.shengdangjia.hermesaccount.entity.Account;
@@ -46,7 +47,7 @@ public class AccountBusiness {
     /**
      * 用户注册申请
      * @param telephone 电话号码
-     * @return
+     * @return token
      */
     public String register(String telephone) throws HermesException {
         // 检查手机号是否存在
@@ -62,9 +63,13 @@ public class AccountBusiness {
             throw new HermesException(21, "发送验证码失败");
         }
 
-        var token = java.util.UUID.randomUUID().toString();
-        stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
-        return token;
+        try {
+            var token = java.util.UUID.randomUUID().toString();
+            stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
+            return token;
+        } catch (Exception e) {
+            throw new HermesException(ErrorCode.DATABASE_FAILED);
+        }
     }
 
     /**
@@ -73,14 +78,13 @@ public class AccountBusiness {
      * @param imei IMEI
      * @param token 验证令牌
      * @param verifyCode 验证码
-     * @return
      */
-    public boolean create(String telephone, String imei, String token, String verifyCode) {
+    public void create(String telephone, String imei, String token, String verifyCode) throws HermesException {
         try {
             // 比较验证码
             var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
             if (vc == null || !vc.equals(telephone + verifyCode))
-                return false;
+                throw new HermesException(22, "验证码错误");
 
             Account account = new Account();
             var uid = UUID.randomUUID().toString();
@@ -97,10 +101,10 @@ public class AccountBusiness {
             action.setType((short) 1);
             actionRepository.save(action);
 
-            return true;
+            return;
         }
         catch (Exception e) {
-            return false;
+            throw new HermesException(ErrorCode.DATABASE_FAILED);
         }
     }
 

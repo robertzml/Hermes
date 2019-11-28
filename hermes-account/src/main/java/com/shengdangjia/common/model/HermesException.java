@@ -11,6 +11,11 @@ public class HermesException extends Exception {
         this.code = code;
     }
 
+    public HermesException(ErrorCode errorCode) {
+        super(errorCode.getErrorMessage());
+        this.code = errorCode.getCode();
+    }
+
     public int getCode() {
         return code;
     }
