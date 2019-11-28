@@ -4,6 +4,7 @@ import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
 import com.shengdangjia.hermesaccount.entity.*;
 import com.shengdangjia.common.model.ResponseData;
+import com.shengdangjia.hermesaccount.model.RegisterConfirmModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

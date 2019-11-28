@@ -1,4 +1,4 @@
-package com.shengdangjia.hermesaccount.entity;
+package com.shengdangjia.hermesaccount.model;
 
 public class RegisterConfirmModel {
     public String telephone;

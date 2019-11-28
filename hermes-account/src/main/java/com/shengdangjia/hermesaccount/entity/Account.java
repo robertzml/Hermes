@@ -6,6 +6,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 
+/**
+ * 账户类
+ */
 @Entity
 @Table(name = "at_account")
 public class Account {
