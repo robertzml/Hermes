@@ -1,5 +1,6 @@
 package com.shengdangjia.hermesaccount.controller;
 
+import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
 import com.shengdangjia.hermesaccount.entity.*;
@@ -31,12 +32,6 @@ public class AccountController {
     @RequestMapping("/account/register")
     ResponseData register(@RequestParam(value = "telephone") String telephone) {
         try {
-            // 检查手机号是否存在
-            var account = accountBusiness.findByTelephone(telephone);
-            if (account != null) {
-                return RestHelper.makeResponse(null, 1);
-            }
-
             var token = accountBusiness.register(telephone);
 
             class Result {
@@ -47,8 +42,8 @@ public class AccountController {
 
             return RestHelper.makeResponse(r, 0);
         }
-        catch (Exception e) {
-            return RestHelper.makeResponse(null, 1);
+        catch (HermesException e) {
+            return RestHelper.makeResponse(null, e.getCode());
         }
     }
 

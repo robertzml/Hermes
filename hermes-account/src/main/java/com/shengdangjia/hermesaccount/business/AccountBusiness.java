@@ -1,8 +1,11 @@
 package com.shengdangjia.hermesaccount.business;
 
+import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.utility.SMSHelper;
 import com.shengdangjia.hermesaccount.entity.Account;
+import com.shengdangjia.hermesaccount.entity.Action;
 import com.shengdangjia.hermesaccount.repository.AccountRepository;
+import com.shengdangjia.hermesaccount.repository.ActionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,6 +23,9 @@ import java.util.UUID;
 public class AccountBusiness {
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    ActionRepository actionRepository;
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;
@@ -42,16 +48,21 @@ public class AccountBusiness {
      * @param telephone 电话号码
      * @return
      */
-    public String register(String telephone) throws Exception {
-        var token = java.util.UUID.randomUUID().toString();
+    public String register(String telephone) throws HermesException {
+        // 检查手机号是否存在
+        var account = findByTelephone(telephone);
+        if (account != null) {
+            throw new HermesException(20, "手机号已存在");
+        }
 
         // 发送验证码
         String verifyCode = generateCode();
         var result = SMSHelper.sendVerifyCode(telephone, verifyCode);
         if (!result) {
-            throw new Exception("发送失败");
+            throw new HermesException(21, "发送验证码失败");
         }
 
+        var token = java.util.UUID.randomUUID().toString();
         stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
         return token;
     }
@@ -65,20 +76,32 @@ public class AccountBusiness {
      * @return
      */
     public boolean create(String telephone, String imei, String token, String verifyCode) {
-        // 比较验证码
-        var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
-        if (vc == null || !vc.equals(telephone + verifyCode))
+        try {
+            // 比较验证码
+            var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
+            if (vc == null || !vc.equals(telephone + verifyCode))
+                return false;
+
+            Account account = new Account();
+            var uid = UUID.randomUUID().toString();
+            account.setId(uid);
+            account.setTelephone(telephone);
+            account.setImei(imei);
+            account.setRegisterTime(new Timestamp(System.currentTimeMillis()));
+            account.setStatus(0);
+            var t = accountRepository.save(account);
+
+            Action action = new Action();
+            action.setId(UUID.randomUUID().toString());
+            action.setUserId(uid);
+            action.setType((short) 1);
+            actionRepository.save(action);
+
+            return true;
+        }
+        catch (Exception e) {
             return false;
-
-        Account account = new Account();
-        account.setId(UUID.randomUUID().toString());
-        account.setTelephone(telephone);
-        account.setImei(imei);
-        account.setRegisterTime(new Timestamp(System.currentTimeMillis()));
-        account.setStatus(0);
-
-        var t = accountRepository.save(account);
-        return true;
+        }
     }
 
     /**
