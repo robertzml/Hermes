@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
 
 /**
@@ -20,6 +21,7 @@ public class Account {
 
     private String password;
 
+    @NotEmpty(message = "电话不能为空")
     private String telephone;
 
     private String imei;

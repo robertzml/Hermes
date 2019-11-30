@@ -20,6 +20,7 @@ public class Action {
 
     private Timestamp logTime;
 
+    private String parameter1;
 
     public String getId() {
         return id;
@@ -51,5 +52,13 @@ public class Action {
 
     public void setLogTime(Timestamp logTime) {
         this.logTime = logTime;
+    }
+
+    public String getParameter1() {
+        return parameter1;
+    }
+
+    public void setParameter1(String parameter1) {
+        this.parameter1 = parameter1;
     }
 }

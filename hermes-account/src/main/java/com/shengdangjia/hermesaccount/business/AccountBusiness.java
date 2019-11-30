@@ -65,6 +65,7 @@ public class AccountBusiness {
 
         try {
             var token = java.util.UUID.randomUUID().toString();
+            // 验证码有效期3分钟
             stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
             return token;
         } catch (Exception e) {
@@ -99,6 +100,8 @@ public class AccountBusiness {
             action.setId(UUID.randomUUID().toString());
             action.setUserId(uid);
             action.setType((short) 1);
+            action.setLogTime(new Timestamp(System.currentTimeMillis()));
+            action.setParameter1(imei);
             actionRepository.save(action);
 
             return;
@@ -116,7 +119,7 @@ public class AccountBusiness {
         StringBuilder code = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 6; i++) {
-            code.append(String.valueOf(random.nextInt(10)));
+            code.append(random.nextInt(10));
         }
         return code.toString();
     }
