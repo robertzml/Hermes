@@ -46,6 +46,9 @@ public class AccountController {
         catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
         }
+        catch (Exception e) {
+            return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
+        }
     }
 
     /**
@@ -61,6 +64,9 @@ public class AccountController {
         }
         catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
+        }
+        catch (Exception e) {
+            return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
         }
     }
 }

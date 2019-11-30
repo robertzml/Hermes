@@ -10,6 +10,7 @@ import com.shengdangjia.hermesaccount.repository.ActionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -37,6 +38,7 @@ public class AccountBusiness {
 
     /**
      * 按手机号查询用户
+     *
      * @param telephone 手机号
      * @return
      */
@@ -46,6 +48,7 @@ public class AccountBusiness {
 
     /**
      * 用户注册申请
+     *
      * @param telephone 电话号码
      * @return token
      */
@@ -62,57 +65,48 @@ public class AccountBusiness {
         if (!result) {
             throw new HermesException(21, "发送验证码失败");
         }
-
-        try {
-            var token = java.util.UUID.randomUUID().toString();
-            // 验证码有效期3分钟
-            stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(180));
-            return token;
-        } catch (Exception e) {
-            throw new HermesException(ErrorCode.DATABASE_FAILED);
-        }
+        var token = java.util.UUID.randomUUID().toString();
+        // 验证码有效期10分钟
+        stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(10 * 60));
+        return token;
     }
 
     /**
      * 添加用户
-     * @param telephone 手机
-     * @param imei IMEI
-     * @param token 验证令牌
+     *
+     * @param telephone  手机
+     * @param imei       IMEI
+     * @param token      验证令牌
      * @param verifyCode 验证码
      */
+    @Transactional(rollbackFor = {HermesException.class, RuntimeException.class, Error.class})
     public void create(String telephone, String imei, String token, String verifyCode) throws HermesException {
-        try {
-            // 比较验证码
-            var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
-            if (vc == null || !vc.equals(telephone + verifyCode))
-                throw new HermesException(22, "验证码错误");
+        // 比较验证码
+        var vc = stringRedisTemplate.opsForValue().get("vc_" + token);
+        if (vc == null || !vc.equals(telephone + verifyCode))
+            throw new HermesException(22, "验证码错误");
 
-            Account account = new Account();
-            var uid = UUID.randomUUID().toString();
-            account.setId(uid);
-            account.setTelephone(telephone);
-            account.setImei(imei);
-            account.setRegisterTime(new Timestamp(System.currentTimeMillis()));
-            account.setStatus(0);
-            var t = accountRepository.save(account);
+        Account account = new Account();
+        var uid = UUID.randomUUID().toString();
+        account.setId(uid);
+        account.setTelephone(telephone);
+        account.setImei(imei);
+        account.setRegisterTime(new Timestamp(System.currentTimeMillis()));
+        account.setStatus(0);
+        var t = accountRepository.save(account);
 
-            Action action = new Action();
-            action.setId(UUID.randomUUID().toString());
-            action.setUserId(uid);
-            action.setType((short) 1);
-            action.setLogTime(new Timestamp(System.currentTimeMillis()));
-            action.setParameter1(imei);
-            actionRepository.save(action);
-
-            return;
-        }
-        catch (Exception e) {
-            throw new HermesException(ErrorCode.DATABASE_FAILED);
-        }
+        Action action = new Action();
+        action.setId(UUID.randomUUID().toString());
+        action.setUserId(uid);
+        action.setType((short) 1);
+        action.setLogTime(new Timestamp(System.currentTimeMillis()));
+        action.setParameter1(imei);
+        actionRepository.save(action);
     }
 
     /**
      * 生成手机验证码
+     *
      * @return 六位验证码
      */
     private String generateCode() {
