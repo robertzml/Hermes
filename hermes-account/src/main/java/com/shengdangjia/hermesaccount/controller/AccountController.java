@@ -6,6 +6,7 @@ import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
 import com.shengdangjia.hermesaccount.entity.*;
 import com.shengdangjia.common.model.ResponseData;
+import com.shengdangjia.hermesaccount.model.LoginModel;
 import com.shengdangjia.hermesaccount.model.RegisterConfirmModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +61,27 @@ public class AccountController {
     ResponseData registerConfirm(@RequestBody RegisterConfirmModel model) {
         try {
             accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
+            return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
+        }
+        catch (HermesException e) {
+            return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
+        }
+        catch (Exception e) {
+            return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
+        }
+    }
+
+    /**
+     * 用户登录
+     * @param model 登录参数
+     * @return
+     */
+    @RequestMapping(value = "/account/login", method = RequestMethod.POST)
+    ResponseData login(@RequestBody LoginModel model) {
+        try
+        {
+            accountBusiness.login(model.telephone, model.imei);
+
             return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
         }
         catch (HermesException e) {

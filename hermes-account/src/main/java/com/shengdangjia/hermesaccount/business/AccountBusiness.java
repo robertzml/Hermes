@@ -105,6 +105,32 @@ public class AccountBusiness {
     }
 
     /**
+     * 用户登录
+     * @param telephone 手机号
+     * @param imei IMEI
+     * @throws HermesException
+     */
+    public void login(String telephone, String imei) throws HermesException {
+        var account = this.accountRepository.findByTelephone(telephone);
+        if (account != null) {
+            throw new HermesException(ErrorCode.OBJECT_NOT_FOUND);
+        }
+
+        if (!account.getImei().equals(imei)) {
+            throw new HermesException(23, "更换登录设备");
+        }
+
+        Action action = new Action();
+        action.setId(UUID.randomUUID().toString());
+        action.setUserId(account.getId());
+        action.setType((short) 2);
+        action.setLogTime(new Timestamp(System.currentTimeMillis()));
+        action.setParameter1(imei);
+        actionRepository.save(action);
+    }
+
+
+    /**
      * 生成手机验证码
      *
      * @return 六位验证码
