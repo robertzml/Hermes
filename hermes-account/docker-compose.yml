@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  hermes-account:
+    image: hermes-account:0.0.1
+    container_name: hermes-account01
+    ports:
+      - "10010:8080"
+    networks:
+      hermes-net:
+
+networks:
+  hermes-net:
+    name: consul_bridge
