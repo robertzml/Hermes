@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.shengdangjia</groupId>
     <artifactId>hermes-account</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>hermes-account</name>
     <description>Demo project for Spring Boot</description>
 
@@ -48,12 +48,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.8.3</version>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

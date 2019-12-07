@@ -1,11 +1,17 @@
 package com.shengdangjia.common.model;
 
+
 /**
  * 自定义异常
  */
 public class HermesException extends Exception {
     private int code;
 
+    /**
+     * 自定义异常
+     * @param code 错误代码
+     * @param message 错误消息
+     */
     public HermesException(int code, String message) {
         super(message);
         this.code = code;
