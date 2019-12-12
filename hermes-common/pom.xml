@@ -5,11 +5,12 @@
     <parent>
         <artifactId>hermes</artifactId>
         <groupId>com.shengdangjia</groupId>
-        <version>0.0.2</version>
+        <version>0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>hermes-common</artifactId>
+    <version>0.0.1</version>
 
     <dependencies>
         <dependency>
@@ -18,5 +19,4 @@
             <version>3.8.3</version>
         </dependency>
     </dependencies>
-
 </project>
