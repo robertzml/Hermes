@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.shengdangjia.common.model.JwtState;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,7 +39,12 @@ public class JwtHelper {
         return token;
     }
 
-    public static boolean decodeIdJWT(String token) {
+    /**
+     * 验证id token
+     * @param token 令牌
+     * @return JWT数据
+     */
+    public static JwtState decodeIdJWT(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC384(key);
             JWTVerifier verifier = JWT.require(algorithm)
@@ -49,11 +55,20 @@ public class JwtHelper {
             DecodedJWT jwt = verifier.verify(token);
 
             var dt = jwt.getExpiresAt();
-            System.out.println(dt);
+            LocalDateTime ldt = dt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-            return true;
+            String uid = jwt.getClaim("uid").asString();
+
+            JwtState state = new JwtState();
+            state.setSuccess(true);
+            state.setExpire(ldt);
+            state.setUid(uid);
+
+            return state;
         } catch (JWTVerificationException e) {
-            return false;
+            JwtState state = new JwtState();
+            state.setSuccess(false);
+            return state;
         }
     }
 }
