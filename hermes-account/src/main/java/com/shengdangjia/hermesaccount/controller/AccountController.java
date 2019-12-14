@@ -70,25 +70,4 @@ public class AccountController {
             return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
         }
     }
-
-    /**
-     * 用户登录
-     * @param model 登录参数
-     * @return
-     */
-    @RequestMapping(value = "/account/login", method = RequestMethod.POST)
-    ResponseData login(@RequestBody LoginModel model) {
-        try
-        {
-            accountBusiness.login(model.telephone, model.imei);
-
-            return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
-        }
-        catch (HermesException e) {
-            return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
-        }
-        catch (Exception e) {
-            return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
-        }
-    }
 }

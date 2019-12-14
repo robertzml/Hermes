@@ -14,25 +14,4 @@ import java.util.UUID;
 public class ActionBusiness {
     @Autowired
     ActionRepository actionRepository;
-
-    /**
-     * 添加操作记录
-     * @param userId
-     * @param type
-     * @return
-     */
-    public boolean insert(String userId, short type) {
-        try {
-            Action action = new Action();
-            action.setId(UUID.randomUUID().toString());
-            action.setUserId(userId);
-            action.setType(type);
-
-            actionRepository.save(action);
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
 }

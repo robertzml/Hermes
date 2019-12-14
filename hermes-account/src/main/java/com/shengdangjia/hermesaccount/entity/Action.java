@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * 操作记录类
  */
 @Entity
-@Table(name = "at_action")
+@Table(name = "au_action")
 public class Action {
     @Id
     private String id;
