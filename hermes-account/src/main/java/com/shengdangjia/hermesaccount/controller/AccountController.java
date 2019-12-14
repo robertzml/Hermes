@@ -11,19 +11,43 @@ import com.shengdangjia.hermesaccount.model.RegisterConfirmModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RequestMapping(value = "/account")
 @RestController
 public class AccountController {
     @Autowired
     AccountBusiness accountBusiness;
 
-    @RequestMapping("/account/list")
-    Iterable<Account> getAll() {
-        return accountBusiness.findAll();
+    /**
+     * 获取用户列表
+     * @return
+     */
+    @RequestMapping("/list")
+    ResponseData getAll() {
+        class Result {
+            public Iterable<Account> data;
+        }
+        var r = new Result();
+        r.data = accountBusiness.findAll();
+
+        return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }
 
-    @RequestMapping("/account/find")
-    Account find(@RequestParam(value = "telephone") String telephone) {
-        return accountBusiness.findByTelephone(telephone);
+    /**
+     * 获取用户信息
+     * @param telephone 手机号
+     * @return
+     */
+    @RequestMapping("/find")
+    ResponseData find(@RequestParam(value = "telephone") String telephone) {
+        class Result {
+            public Account data;
+        }
+
+        var r = new Result();
+        r.data = accountBusiness.findByTelephone(telephone);
+        return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }
 
     /**
@@ -31,7 +55,7 @@ public class AccountController {
      * @param telephone 电话号码
      * @return token
      */
-    @RequestMapping("/account/register")
+    @RequestMapping("/register")
     ResponseData register(@RequestParam(value = "telephone") String telephone) {
         try {
             var token = accountBusiness.register(telephone);
@@ -57,7 +81,7 @@ public class AccountController {
      * @param model 确认参数
      * @return
      */
-    @RequestMapping(value = "/account/registerConfirm", method = RequestMethod.POST)
+    @RequestMapping(value = "/registerConfirm", method = RequestMethod.POST)
     ResponseData registerConfirm(@RequestBody RegisterConfirmModel model) {
         try {
             accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
