@@ -50,7 +50,7 @@ public class AccountBusiness {
      * 用户注册申请
      *
      * @param telephone 电话号码
-     * @return token
+     * @return token 验证码token
      */
     public String register(String telephone) throws HermesException {
         // 检查手机号是否存在

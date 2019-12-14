@@ -25,12 +25,7 @@ public class AccountController {
      */
     @RequestMapping("/list")
     ResponseData getAll() {
-        class Result {
-            public Iterable<Account> data;
-        }
-        var r = new Result();
-        r.data = accountBusiness.findAll();
-
+        var r = accountBusiness.findAll();
         return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }
 
@@ -41,12 +36,7 @@ public class AccountController {
      */
     @RequestMapping("/find")
     ResponseData find(@RequestParam(value = "telephone") String telephone) {
-        class Result {
-            public Account data;
-        }
-
-        var r = new Result();
-        r.data = accountBusiness.findByTelephone(telephone);
+        var r =  accountBusiness.findByTelephone(telephone);
         return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }
 

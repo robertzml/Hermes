@@ -1,15 +1,15 @@
 package com.shengdangjia.hermesauthentication.business;
 
-import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.HermesException;
-import com.shengdangjia.hermesauthentication.entity.Action;
+import com.shengdangjia.common.utility.JwtHelper;
+import com.shengdangjia.common.utility.SMSHelper;
+import com.shengdangjia.hermesauthentication.entity.Account;
 import com.shengdangjia.hermesauthentication.repository.AccountRepository;
-import com.shengdangjia.hermesauthentication.repository.ActionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
-import java.sql.Timestamp;
-import java.util.UUID;
+import java.time.Duration;
 
 @Configuration
 public class AccountBusiness {
@@ -17,30 +17,59 @@ public class AccountBusiness {
     AccountRepository accountRepository;
 
     @Autowired
-    ActionRepository actionRepository;
+    ActionBusiness actionBusiness;
+
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 按手机号查询用户
+     *
+     * @param telephone 手机号
+     * @return
+     */
+    public Account findByTelephone(String telephone) {
+        return accountRepository.findByTelephone(telephone);
+    }
+
+    /**
+     * 发送验证码
+     * 登录imei 不一致时发送
+     *
+     * @param telephone 手机号
+     * @return 验证码 token
+     * @throws HermesException
+     */
+    public String sendVerifyCode(String telephone) throws HermesException {
+        String verifyCode = SMSHelper.generateCode();
+
+        var result = SMSHelper.sendVerifyCode(telephone, verifyCode);
+        if (!result) {
+            throw new HermesException(21, "发送验证码失败");
+        }
+
+        var token = java.util.UUID.randomUUID().toString();
+        // 验证码有效期10分钟
+        stringRedisTemplate.opsForValue().set("vc_" + token, telephone + verifyCode, Duration.ofSeconds(10 * 60));
+        return token;
+    }
 
     /**
      * 用户登录
-     * @param telephone 手机号
-     * @param imei IMEI
+     *
+     * @param account 用户信息
+     * @return id token
      * @throws HermesException
      */
-    public void login(String telephone, String imei) throws HermesException {
-        var account = this.accountRepository.findByTelephone(telephone);
-        if (account == null) {
-            throw new HermesException(ErrorCode.OBJECT_NOT_FOUND);
-        }
+    public String login(Account account) throws HermesException {
+        // 保存操作记录
+        this.actionBusiness.insert(account.id, (short) 2, account.imei);
 
-        if (!account.imei.equals(imei)) {
-            throw new HermesException(23, "更换登录设备");
-        }
+        var token = JwtHelper.createIdJWT(account.id);
 
-        Action action = new Action();
-        action.id = UUID.randomUUID().toString();
-        action.userId = account.id;
-        action.type = (short)2;
-        action.logTime = new Timestamp(System.currentTimeMillis());
-        action.parameter1 = imei;
-        actionRepository.save(action);
+        // 令牌1小时过期
+        stringRedisTemplate.opsForValue().set("id_" + account.id, token, Duration.ofHours(1));
+
+        return token;
     }
 }

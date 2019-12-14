@@ -27,9 +27,33 @@ public class AccountController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseData login(@RequestBody LoginModel model) {
         try {
-            this.accountBusiness.login(model.telephone, model.imei);
+            var account = this.accountBusiness.findByTelephone(model.telephone);
+            if (account == null) {
+                return RestHelper.makeResponse(null, ErrorCode.OBJECT_NOT_FOUND);
+            }
 
-            return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
+            if (account.imei.equals(model.imei)) {
+                // IMEI 一致
+                var token = this.accountBusiness.login(account);
+                class Result {
+                    public String token;
+                }
+                var r = new Result();
+                r.token = token;
+
+                return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
+            }
+            else {
+                // IMEI 不一致
+                var token = this.accountBusiness.sendVerifyCode(model.telephone);
+                class Result {
+                    public String token;
+                }
+                var r = new Result();
+                r.token = token;
+
+                return RestHelper.makeResponse(r, 23, "更换登录设备");
+            }
         } catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
         } catch (Exception e) {
