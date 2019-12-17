@@ -2,16 +2,13 @@ package com.shengdangjia.hermesaccount.controller;
 
 import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.HermesException;
+import com.shengdangjia.common.model.ResponseData;
 import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesaccount.business.AccountBusiness;
-import com.shengdangjia.hermesaccount.entity.*;
-import com.shengdangjia.common.model.ResponseData;
-import com.shengdangjia.hermesaccount.model.LoginModel;
 import com.shengdangjia.hermesaccount.model.RegisterConfirmModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RequestMapping(value = "/account")
 @RestController
@@ -21,6 +18,7 @@ public class AccountController {
 
     /**
      * 获取用户列表
+     *
      * @return
      */
     @RequestMapping("/list")
@@ -31,17 +29,19 @@ public class AccountController {
 
     /**
      * 获取用户信息
+     *
      * @param telephone 手机号
-     * @return
+     * @return 用户信息
      */
     @RequestMapping("/find")
     ResponseData find(@RequestParam(value = "telephone") String telephone) {
-        var r =  accountBusiness.findByTelephone(telephone);
+        var r = accountBusiness.findByTelephone(telephone);
         return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }
 
     /**
      * 用户注册接口
+     *
      * @param telephone 电话号码
      * @return token
      */
@@ -57,30 +57,27 @@ public class AccountController {
             r.token = token;
 
             return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
-        }
-        catch (HermesException e) {
+        } catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
         }
     }
 
     /**
      * 注册确认接口
+     *
      * @param model 确认参数
-     * @return
+     * @return 
      */
     @RequestMapping(value = "/registerConfirm", method = RequestMethod.POST)
     ResponseData registerConfirm(@RequestBody RegisterConfirmModel model) {
         try {
             accountBusiness.create(model.telephone, model.imei, model.token, model.verifyCode);
             return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
-        }
-        catch (HermesException e) {
+        } catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
         }
     }

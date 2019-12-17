@@ -1,6 +1,5 @@
 package com.shengdangjia.hermesaccount.business;
 
-import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.utility.SMSHelper;
 import com.shengdangjia.hermesaccount.entity.Account;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 

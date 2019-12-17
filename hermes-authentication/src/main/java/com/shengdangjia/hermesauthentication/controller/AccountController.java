@@ -5,6 +5,7 @@ import com.shengdangjia.common.model.HermesException;
 import com.shengdangjia.common.model.ResponseData;
 import com.shengdangjia.common.utility.RestHelper;
 import com.shengdangjia.hermesauthentication.business.AccountBusiness;
+import com.shengdangjia.hermesauthentication.model.LoginConfirmModel;
 import com.shengdangjia.hermesauthentication.model.LoginModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +43,7 @@ public class AccountController {
                 r.token = token;
 
                 return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
-            }
-            else {
+            } else {
                 // IMEI 不一致
                 var token = this.accountBusiness.sendVerifyCode(model.telephone);
                 class Result {
@@ -56,6 +56,27 @@ public class AccountController {
             }
         } catch (HermesException e) {
             return RestHelper.makeResponse(null, e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
+        }
+    }
+
+    /**
+     * 用户登录确认
+     * @param model 登录确认模型
+     * @return id token
+     */
+    @RequestMapping(value = "/loginConfirm", method = RequestMethod.POST)
+    public ResponseData loginConfirm(@RequestBody LoginConfirmModel model) {
+        try {
+            var token = this.accountBusiness.loginConfirm(model.telephone, model.imei, model.token, model.verifyCode);
+            class Result {
+                public String token;
+            }
+            var r = new Result();
+            r.token = token;
+
+            return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
         } catch (Exception e) {
             return RestHelper.makeResponse(null, ErrorCode.DATABASE_FAILED);
         }
