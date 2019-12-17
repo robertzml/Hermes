@@ -27,7 +27,7 @@ public class RestHelper {
      *
      * @param result    相关数据
      * @param errorCode 错误码
-     * @return
+     * @return 返回内容
      */
     public static ResponseData makeResponse(Object result, ErrorCode errorCode) {
         ResponseData data = new ResponseData();
