@@ -12,6 +12,7 @@
         <module>hermes-common</module>
         <module>hermes-account</module>
         <module>hermes-authentication</module>
+        <module>hermes-gateway</module>
     </modules>
 
     <parent>

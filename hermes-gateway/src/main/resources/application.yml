@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: hermes-gateway
+  cloud:
+    consul:
+      host: 192.168.1.121
+      port: 8500
+      discovery:
+        health-check-interval: 10s
+        health-check-path: /actuator/health
+        enabled: true
+        register: true
+        service-name: ${spring.application.name}
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}-${random.value}
+    gateway:
+      routes:
+        - id: account-service
+          uri: lb://hermes-account
+          predicates:
+            - Path=/account/**
+        - id: authentication-service
+          uri: lb://hermes-authentication
+          predicates:
+            - Path=/authentication/**
+server:
+  port: 10000
