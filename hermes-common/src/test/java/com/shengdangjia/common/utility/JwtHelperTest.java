@@ -28,6 +28,7 @@ class JwtHelperTest {
 
         var jwt = JwtHelper.decodeIdJWT(token);
 
-        assertEquals("83738b5e-6b5f-4c7a-bcd2-36bf87796d85", jwt.getUid());
+        assertEquals(false, jwt.isSuccess());
+        //assertEquals("83738b5e-6b5f-4c7a-bcd2-36bf87796d85", jwt.getUid());
     }
 }
