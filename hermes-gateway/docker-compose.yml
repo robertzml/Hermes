@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  hermes-gateway-1:
+    image: hermes-gateway:0.0.1
+    container_name: hermes-gateway01
+    ports:
+      - "10000:10000"
+    networks:
+      hermes-net:
+networks:
+  hermes-net:
+    name: hermes-network

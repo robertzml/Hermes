@@ -14,14 +14,20 @@ spring:
         prefer-ip-address: true
         instance-id: ${spring.application.name}-${random.value}
     gateway:
-      routes:
-        - id: account-service
-          uri: lb://hermes-account
-          predicates:
-            - Path=/account/**
-        - id: authentication-service
-          uri: lb://hermes-authentication
-          predicates:
-            - Path=/authentication/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+#      routes:
+#        - id: account-service
+#          predicates:
+#            - Path=/account-service/**
+#          filter:
+#            - StripPrefix=1
+#          uri: lb://hermes-account
+#        - id: authentication-service
+#          uri: lb://hermes-authentication
+#          predicates:
+#            - Path=/authentication/**
 server:
   port: 10000
