@@ -18,5 +18,10 @@ public class ResponseData {
      * 消息
      */
     public String message;
+
+    /**
+     * 服务端ip
+     */
+    public String ipaddress;
 }
 
