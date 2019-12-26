@@ -49,14 +49,4 @@ public class RestHelper {
 
         return data;
     }
-
-    /**
-     * 返回响应内容 JSON 字符串
-     * @param data 响应内容
-     * @return JSON 字符串
-     */
-    public static String toJsonString(ResponseData data) {
-        var str = JSON.toJSONString(data);
-        return str;
-    }
 }

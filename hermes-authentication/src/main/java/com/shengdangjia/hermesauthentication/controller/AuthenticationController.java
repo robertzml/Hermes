@@ -22,9 +22,9 @@ public class AuthenticationController {
      * @param token id token
      * @return
      */
-    @RequestMapping(value = "/auth", method = RequestMethod.GET)
-    public ResponseData auth(String token) {
-        var result = this.authenticationBusiness.auth(token);
+    @RequestMapping(value = "/id", method = RequestMethod.GET)
+    public ResponseData id(String token) {
+        var result = this.authenticationBusiness.authId(token);
         if (result) {
             return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
         } else {

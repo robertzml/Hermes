@@ -1,5 +1,7 @@
 package com.shengdangjia.common.model;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * 通用返回数据类
  */
@@ -23,5 +25,13 @@ public class ResponseData {
      * 服务端ip
      */
     public String ipaddress;
-}
 
+    /**
+     * 返回响应内容 JSON 字符串
+     * @return JSON 字符串
+     */
+    public String toJsonString() {
+        var str = JSON.toJSONString(this);
+        return str;
+    }
+}

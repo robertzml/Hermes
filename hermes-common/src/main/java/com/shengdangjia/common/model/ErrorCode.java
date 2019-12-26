@@ -10,7 +10,9 @@ public enum ErrorCode {
     NOT_IMPLEMENT("not implement ", 3),
     OBJECT_DELETED("object deleted", 4),
     OBJECT_NOT_FOUND("object not found ", 5),
-    DATABASE_FAILED("database failed", 6);
+    DATABASE_FAILED("database failed", 6),
+    NEED_AUTHORIZATION("need authorization", 7),
+    AUTHORIZATION_FAILED("authorization failed", 8);
 
     private String errorMessage;
 

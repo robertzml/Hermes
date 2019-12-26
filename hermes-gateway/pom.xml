@@ -11,7 +11,7 @@
     <artifactId>hermes-gateway</artifactId>
     <version>0.0.1</version>
     <name>hermes-gateway</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Gateway module for Spring Boot</description>
 
     <properties>
         <java.version>11</java.version>
@@ -42,6 +42,12 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.shengdangjia</groupId>
+            <artifactId>hermes-common</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 

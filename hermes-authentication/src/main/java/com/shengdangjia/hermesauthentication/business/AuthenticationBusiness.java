@@ -19,7 +19,7 @@ public class AuthenticationBusiness {
      * @param token id token
      * @return
      */
-    public boolean auth(String token) {
+    public boolean authId(String token) {
         // 验证jwt
         var jwt = JwtHelper.decodeIdJWT(token);
         if (!jwt.isSuccess()) {
