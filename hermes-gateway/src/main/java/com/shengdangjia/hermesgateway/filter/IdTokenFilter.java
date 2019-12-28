@@ -28,6 +28,7 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String url = exchange.getRequest().getURI().getPath();
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
+        System.out.println(token);
 
         var resp = exchange.getResponse();
 

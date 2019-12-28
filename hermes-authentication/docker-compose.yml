@@ -1,15 +1,15 @@
 version: "3.7"
 services:
   hermes-auth-1:
-    image: hermes-auth:0.0.1
-    container_name: hermes-auth01
+    image: hermes-authentication:0.0.2
+    container_name: hermes-authentication01
     ports:
       - "10200:10200"
     networks:
       hermes-net:
   hermes-auth-2:
-    image: hermes-auth:0.0.1
-    container_name: hermes-auth02
+    image: hermes-authentication:0.0.2
+    container_name: hermes-authentication02
     ports:
       - "10201:10200"
     networks:
