@@ -8,10 +8,12 @@ public class JwtState {
      */
     private boolean success;
 
+    private boolean expire;
+
     /**
      * 超期时间
      */
-    private LocalDateTime expire;
+    private LocalDateTime expireTime;
 
     /**
      * 用户ID
@@ -34,11 +36,22 @@ public class JwtState {
         this.uid = uid;
     }
 
-    public LocalDateTime getExpire() {
+    public LocalDateTime getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(LocalDateTime expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    /**
+     * 是否超时
+     */
+    public boolean isExpire() {
         return expire;
     }
 
-    public void setExpire(LocalDateTime expire) {
+    public void setExpire(boolean expire) {
         this.expire = expire;
     }
 }

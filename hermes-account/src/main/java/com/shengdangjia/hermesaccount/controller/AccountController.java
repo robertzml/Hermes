@@ -10,12 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @RequestMapping(value = "/account")
 @RestController
 public class AccountController {
     @Autowired
     AccountBusiness accountBusiness;
+
+    @Autowired
+    HttpServletRequest request;
 
     /**
      * 获取用户列表
@@ -24,6 +29,9 @@ public class AccountController {
      */
     @RequestMapping("/list")
     ResponseData getAll() {
+        var access = request.getHeader("Authorization");
+        System.out.println(access);
+
         var r = accountBusiness.findAll();
         return RestHelper.makeResponse(r, ErrorCode.SUCCESS);
     }

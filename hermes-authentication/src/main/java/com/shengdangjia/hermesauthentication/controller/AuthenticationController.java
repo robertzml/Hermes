@@ -9,34 +9,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 @RequestMapping(value = "/auth")
 @RestController
 public class AuthenticationController {
     @Autowired
     AuthenticationBusiness authenticationBusiness;
 
-    @Autowired
-    HttpServletRequest request;
-
     /**
      * 用户认证
      * 认证 id token 是否有效
+     * 成功后返回 access token
      *
      * @param token id token
      * @return
      */
     @RequestMapping(value = "/id", method = RequestMethod.GET)
     public ResponseData id(String token) {
-        // var from = request.getHeader("from");
-        // System.out.println(from);
-
         var result = this.authenticationBusiness.authId(token);
-        if (result) {
-            return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
-        } else {
-            return RestHelper.makeResponse(null, ErrorCode.ERROR);
+        switch (result) {
+            case 0:
+                String access = this.authenticationBusiness.generateAccess(token);
+                return RestHelper.makeResponse(access, ErrorCode.SUCCESS);
+            case 1:
+                return RestHelper.makeResponse(null, ErrorCode.AUTHORIZATION_EXPIRE);
+            default:
+                return RestHelper.makeResponse(null, ErrorCode.AUTHORIZATION_FAILED);
         }
     }
 

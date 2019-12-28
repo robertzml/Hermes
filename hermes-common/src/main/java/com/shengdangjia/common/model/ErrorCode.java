@@ -11,8 +11,10 @@ public enum ErrorCode {
     OBJECT_DELETED("object deleted", 4),
     OBJECT_NOT_FOUND("object not found ", 5),
     DATABASE_FAILED("database failed", 6),
-    NEED_AUTHORIZATION("need authorization", 7),
-    AUTHORIZATION_FAILED("authorization failed", 8);
+    NETWORK_ERROR("network error", 7),
+    NEED_AUTHORIZATION("need authorization", 8),
+    AUTHORIZATION_FAILED("authorization failed", 9),
+    AUTHORIZATION_EXPIRE("authorization expire", 10);
 
     private String errorMessage;
 

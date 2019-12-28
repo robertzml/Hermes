@@ -8,6 +8,8 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -27,58 +29,77 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
         String url = exchange.getRequest().getURI().getPath();
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
 
+        var resp = exchange.getResponse();
+
         if (StringUtils.isEmpty(token)) {
-            var resp = exchange.getResponse();
-            resp.setStatusCode(HttpStatus.OK);
-            resp.getHeaders().add("Content-Type","application/json;charset=UTF-8");
-
-            ResponseData d = RestHelper.makeResponse(null, ErrorCode.NEED_AUTHORIZATION);
-            var s = d.toJsonString();
-
-            DataBuffer buffer = resp.bufferFactory().wrap(s.getBytes(StandardCharsets.UTF_8));
-            return resp.writeWith(Mono.just(buffer));
+            return failAuth(resp, RestHelper.makeResponse(null, ErrorCode.NEED_AUTHORIZATION));
         } else {
-            try {
-                HttpClient client = HttpClient.newBuilder()
-                        .connectTimeout(Duration.ofSeconds(5))
+            ResponseData authResult = sendAuth(token);
+            if (authResult.errorCode == 0) {
+                ServerHttpRequest request = exchange.getRequest().mutate()
+                        .header("Authorization", authResult.result.toString())
                         .build();
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:10000/authentication-service/auth/id?token=" + token))
-                        .header("from", "hermes-gateway")
-                        .timeout(Duration.ofSeconds(5))
-                        .build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                var resbody = response.body();
-                System.out.println(resbody);
-
-                var authResult = ResponseData.fromJsonString(resbody);
-                if (authResult.errorCode == 0) {
-                    return chain.filter(exchange);
-                } else {
-                    var resp = exchange.getResponse();
-                    resp.setStatusCode(HttpStatus.OK);
-                    resp.getHeaders().add("Content-Type","application/json;charset=UTF-8");
-
-                    ResponseData d = RestHelper.makeResponse(null, ErrorCode.AUTHORIZATION_FAILED);
-                    var s = d.toJsonString();
-
-                    DataBuffer buffer = resp.bufferFactory().wrap(s.getBytes(StandardCharsets.UTF_8));
-                    return resp.writeWith(Mono.just(buffer));
-                }
-            } catch (IOException e) {
-                System.out.println("io execption" + e.toString());
-                return chain.filter(exchange);
-            } catch (InterruptedException e) {
-                System.out.println("interrupted execption" + e.toString());
-                return chain.filter(exchange);
+                return chain.filter(exchange.mutate().request(request).build());
+            } else {
+                ResponseData d = RestHelper.makeResponse(null, authResult.errorCode, authResult.message);
+                return failAuth(resp, d);
             }
         }
     }
 
     /**
+     * 发送id token 认证
+     * 认证成功后获取 access token
+     * @param token id token
+     * @return 认证结果
+     */
+    private ResponseData sendAuth(String token) {
+        try {
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(5))
+                    .build();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:10000/authentication-service/auth/id?token=" + token))
+                    .header("from", "hermes-gateway")
+                    .timeout(Duration.ofSeconds(5))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            var body = response.body();
+
+            return ResponseData.fromJsonString(body);
+        } catch (IOException e) {
+            System.out.println("io execption" + e.toString());
+            return RestHelper.makeResponse(e.toString(), ErrorCode.NETWORK_ERROR);
+
+        } catch (InterruptedException e) {
+            System.out.println("interrupted execption" + e.toString());
+            return RestHelper.makeResponse(e.toString(), ErrorCode.NETWORK_ERROR);
+        }
+    }
+
+    /**
+     * 处理失败返回
+     *
+     * @param response
+     * @param data
+     * @return
+     */
+    private Mono<Void> failAuth(ServerHttpResponse response, ResponseData data) {
+        response.setStatusCode(HttpStatus.OK);
+        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
+
+        var json = data.toJsonString();
+        DataBuffer buffer = response.bufferFactory().wrap(json.getBytes(StandardCharsets.UTF_8));
+
+        return response.writeWith(Mono.just(buffer));
+    }
+
+    /**
      * filter 顺序
+     *
      * @return -50
      */
     @Override

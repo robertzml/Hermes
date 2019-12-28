@@ -17,21 +17,37 @@ public class AuthenticationBusiness {
     /**
      * id token 验证
      * @param token id token
-     * @return
+     * @return 0:验证通过  1:超时  2:失败  3:不存在
      */
-    public boolean authId(String token) {
+    public int authId(String token) {
         // 验证jwt
         var jwt = JwtHelper.decodeIdJWT(token);
         if (!jwt.isSuccess()) {
-            return false;
+            if (jwt.isExpire()) {
+                return 1;
+            } else {
+                return 2;
+            }
         }
 
         // 查找缓存中id token 是否存在
-//        var cache = stringRedisTemplate.opsForValue().get("id_" + jwt.getUid());
-//        if (cache == null || !cache.equals(token))
-//            return false;
+        var cache = stringRedisTemplate.opsForValue().get("id_" + jwt.getUid());
+        if (cache == null || !cache.equals(token))
+            return 3;
 
-        return true;
+        return 0;
+    }
+
+    /**
+     * 生成access token
+     * @param idToken 原id token
+     * @return access token
+     */
+    public String generateAccess(String idToken) {
+        var jwt = JwtHelper.decodeIdJWT(idToken);
+
+        String token = JwtHelper.createAccessJWT(jwt.getUid());
+        return token;
     }
 
     public boolean testAuth(int a) {

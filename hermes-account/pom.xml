@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>hermes-account</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>hermes-account</name>
     <description>Account module for Spring Boot</description>
 

@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>hermes-gateway</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>hermes-gateway</name>
     <description>Gateway module for Spring Boot</description>
 
