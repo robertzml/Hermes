@@ -3,8 +3,8 @@ package com.shengdangjia.hermesgateway.filter;
 import com.shengdangjia.common.model.ErrorCode;
 import com.shengdangjia.common.model.ResponseData;
 import com.shengdangjia.common.utility.RestHelper;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,16 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-public class IdTokenFilter implements GatewayFilter, Ordered {
+public class IdGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // 根据请求来源，判断是否进行token验证
+        String from = exchange.getRequest().getHeaders().getFirst("From");
+        if (from != null && from.equals("hermes-gateway")) {
+            return chain.filter(exchange);
+        }
+
         String url = exchange.getRequest().getURI().getPath();
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
 
@@ -37,7 +43,8 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
 
             DataBuffer buffer = resp.bufferFactory().wrap(s.getBytes(StandardCharsets.UTF_8));
             return resp.writeWith(Mono.just(buffer));
-        } else {
+        }
+        else {
             try {
                 HttpClient client = HttpClient.newBuilder()
                         .connectTimeout(Duration.ofSeconds(5))
@@ -53,10 +60,7 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
                 var resbody = response.body();
                 System.out.println(resbody);
 
-                var authResult = ResponseData.fromJsonString(resbody);
-                if (authResult.errorCode == 0) {
-                    return chain.filter(exchange);
-                } else {
+                if (resbody == null) {
                     var resp = exchange.getResponse();
                     resp.setStatusCode(HttpStatus.OK);
                     resp.getHeaders().add("Content-Type","application/json;charset=UTF-8");
@@ -66,6 +70,8 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
 
                     DataBuffer buffer = resp.bufferFactory().wrap(s.getBytes(StandardCharsets.UTF_8));
                     return resp.writeWith(Mono.just(buffer));
+                } else {
+                    return chain.filter(exchange);
                 }
             } catch (IOException e) {
                 System.out.println("io execption" + e.toString());
@@ -79,10 +85,10 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
 
     /**
      * filter 顺序
-     * @return -50
+     * @return -100
      */
     @Override
     public int getOrder() {
-        return -50;
+        return -100;
     }
 }

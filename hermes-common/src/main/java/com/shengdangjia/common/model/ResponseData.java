@@ -34,4 +34,9 @@ public class ResponseData {
         var str = JSON.toJSONString(this);
         return str;
     }
+
+    public static ResponseData fromJsonString(String str) {
+        ResponseData data = JSON.parseObject(str, ResponseData.class);
+        return data;
+    }
 }

@@ -16,7 +16,7 @@ class JwtHelperTest {
         var token = JwtHelper.createIdJWT("123");
 
         System.out.println(token);
-        sleep(2000);
+        // sleep(2000);
         var res = JwtHelper.decodeIdJWT(token);
         assertEquals(true, res.isSuccess());
         assertEquals("123", res.getUid());

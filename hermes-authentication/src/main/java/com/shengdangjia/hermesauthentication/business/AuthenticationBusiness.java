@@ -27,9 +27,9 @@ public class AuthenticationBusiness {
         }
 
         // 查找缓存中id token 是否存在
-        var cache = stringRedisTemplate.opsForValue().get("id_" + jwt.getUid());
-        if (cache == null || !cache.equals(token))
-            return false;
+//        var cache = stringRedisTemplate.opsForValue().get("id_" + jwt.getUid());
+//        if (cache == null || !cache.equals(token))
+//            return false;
 
         return true;
     }

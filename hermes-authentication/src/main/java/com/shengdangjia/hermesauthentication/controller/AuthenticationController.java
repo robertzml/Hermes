@@ -9,11 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RequestMapping(value = "/auth")
 @RestController
 public class AuthenticationController {
     @Autowired
     AuthenticationBusiness authenticationBusiness;
+
+    @Autowired
+    HttpServletRequest request;
 
     /**
      * 用户认证
@@ -24,6 +29,9 @@ public class AuthenticationController {
      */
     @RequestMapping(value = "/id", method = RequestMethod.GET)
     public ResponseData id(String token) {
+        // var from = request.getHeader("from");
+        // System.out.println(from);
+
         var result = this.authenticationBusiness.authId(token);
         if (result) {
             return RestHelper.makeResponse(null, ErrorCode.SUCCESS);
