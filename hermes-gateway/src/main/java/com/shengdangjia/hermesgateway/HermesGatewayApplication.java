@@ -20,6 +20,15 @@ public class HermesGatewayApplication {
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
+                        .order(1)
+                        .path("/account-service/register/**")
+                        .filters(
+                                f -> f.stripPrefix(1)
+                        )
+                        .uri("lb://hermes-account")
+                    )
+                .route(p -> p
+                        .order(2)
                         .path("/account-service/**")
                         .filters(
                                 f -> f.stripPrefix(1)
@@ -34,9 +43,4 @@ public class HermesGatewayApplication {
                         .uri("lb://hermes-authentication"))
                 .build();
     }
-
-//    @Bean
-//    public GlobalFilter customFilter() {
-//        return new IdTokenFilter();
-//    }
 }
