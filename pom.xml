@@ -13,6 +13,7 @@
         <module>hermes-account</module>
         <module>hermes-authentication</module>
         <module>hermes-gateway</module>
+        <module>hermes-log</module>
     </modules>
 
     <parent>

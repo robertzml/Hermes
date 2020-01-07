@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: hermes-log
+  rabbitmq:
+    host: 192.168.1.121
+    port: 5672
+    username: admin
+    password: admin
+  cloud:
+    consul:
+      host: 192.168.1.121
+      port: 8500
+      discovery:
+        health-check-interval: 10s
+        health-check-path: /actuator/health
+        enabled: true
+        register: true
+        service-name: ${spring.application.name}
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}-${random.value}
