@@ -1,6 +1,7 @@
 package com.shengdangjia.hermesaccount.controller;
 
 import com.shengdangjia.common.model.ErrorCode;
+import com.shengdangjia.common.model.LogMessage;
 import com.shengdangjia.common.model.ResponseData;
 import com.shengdangjia.common.utility.RestHelper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,14 +24,9 @@ public class TopicController {
 
     @RequestMapping(value = "/log")
     ResponseData log() {
-        String messageId = String.valueOf(UUID.randomUUID());
-        String messageData = "message: log ";
-        String createTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Map<String, Object> manMap = new HashMap<>();
-        manMap.put("messageId", messageId);
-        manMap.put("messageData", messageData);
-        manMap.put("createTime", createTime);
-        rabbitTemplate.convertAndSend("topicExchange", "topic.log", manMap);
+        LogMessage message = new LogMessage(2, "hermes-accout", "topic", "test the topic");
+
+        rabbitTemplate.convertAndSend("topicExchange", "topic.log", message);
 
         String r = "log success";
         return RestHelper.makeResponse(r, ErrorCode.SUCCESS);

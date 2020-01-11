@@ -36,6 +36,6 @@ public class TopicRabbitConfig {
 
     @Bean
     Binding bindingEventExchange() {
-        return BindingBuilder.bind(eventQueue()).to(exchange()).with("topic.#");
+        return BindingBuilder.bind(eventQueue()).to(exchange()).with("topic.event");
     }
 }
