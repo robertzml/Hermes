@@ -15,7 +15,7 @@ public class TopicRabbitConfig {
     public final static String eventQ = "topic.event";
 
     @Bean
-    public Queue logQueue() {
+    public Queue log2Queue() {
         return new Queue(TopicRabbitConfig.logQ);
     }
 
@@ -31,7 +31,7 @@ public class TopicRabbitConfig {
 
     @Bean
     Binding bindingLogExchange() {
-        return BindingBuilder.bind(logQueue()).to(exchange()).with(logQ);
+        return BindingBuilder.bind(log2Queue()).to(exchange()).with(logQ);
     }
 
     @Bean
