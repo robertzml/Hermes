@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  hermes-log-1:
+    image: hermes-log:0.0.1
+    container_name: hermes-log01
+    ports:
+      - "12010:9090"
+    networks:
+      hermes-net:
+  hermes-log-2:
+    image: hermes-log:0.0.1
+    container_name: hermes-log02
+    ports:
+      - "12011:9090"
+    networks:
+      hermes-net:
+networks:
+  hermes-net:
+    name: hermes-network
