@@ -25,6 +25,7 @@ public class AuthenticationController {
      */
     @RequestMapping(value = "/id", method = RequestMethod.GET)
     public ResponseData id(String token) {
+        System.out.println("auth id token: " + token);
         var result = this.authenticationBusiness.authId(token);
         switch (result) {
             case 0:

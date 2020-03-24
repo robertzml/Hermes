@@ -28,13 +28,14 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String url = exchange.getRequest().getURI().getPath();
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-        System.out.println(token);
+        System.out.println("start filter in");
 
         var resp = exchange.getResponse();
 
         if (StringUtils.isEmpty(token)) {
             return failAuth(resp, RestHelper.makeResponse(null, ErrorCode.NEED_AUTHORIZATION));
         } else {
+            System.out.println("send auth");
             ResponseData authResult = sendAuth(token);
             if (authResult.errorCode == 0) {
                 ServerHttpRequest request = exchange.getRequest().mutate()
@@ -70,6 +71,7 @@ public class IdTokenFilter implements GatewayFilter, Ordered {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             var body = response.body();
 
+            System.out.println("auth id finish");
             return ResponseData.fromJsonString(body);
         } catch (IOException e) {
             System.out.println("io execption" + e.toString());
